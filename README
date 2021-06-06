@@ -1,0 +1,57 @@
+README for: corinvert_python
+
+Description: Invert for factors influing coherence as a function of time, plot results
+
+
+Steps: 
+
+0. See instructions at the top of the 01-make-params.ipynb notebook. For convience, they are also pasted here: 
+    -Download Sentinel-1 data from, e.g., ASF Vertex
+
+    -Download DEM, e.g.: 
+        dem.py -a download -c -b 18 21 54 57  -r -s 3
+        dem.py -a stitch -b 18 21 54 57  -r -s 3 -l -k -c
+        fixImageXml.py -i demLat_N18_N21_Lon_E054_E057.dem.wgs84 -f
+
+    -Run ISCE to co-register SLCs, e.g.: 
+        stackSentinel.py -s ./data -o ./isce/precise/ -a ./isce/aux_cal/ -w ./slcs/ -d ./dem/demLat_N18_N21_Lon_E054_E057.dem.wgs84 -c 1 -n '1' -O 1 -m 20180502 -b '19.19 19.20 55.39 55.4' -r 1 -z 1 -W slc
+
+    -Run all files in run_files directory: 
+        chmod 777 run_files/* 
+        create executable file "run_run_files", with ./run_1_unpack_slc_topo_master; ./run_2_average_baseline... 
+        run: ./run_run_files
+
+    - Re-run ISCE for VH 
+        run "doVH.pl" in workdir 
+        chmod 777 run_files_vh/* 
+        create executable file "run_run_files_vh", with ./run_1_unpack_slc_topo_master; ./run_7_geo2rdr_resample... 
+        run: ./run_run_files_vh
+        WHEN FINISHED, run: mv merged/SLC merged/SLC_VH
+
+
+1. Run all steps in 01-make-params.ipynb
+
+
+2. Run 02-cor-inversion. 
+    - Ensure that corinvfuncs.ipynb and decide_ints_stack.ipynb are in your path. 
+    - Edit the "INPUT REQUIRED" section of the notebook with your own file paths 
+    - Change "poli" variable to either "_VV" or "_VH" 
+    - Will create new directory: results_dates_VV or results_dates_VH with result files
+    - If you are running into errors, make sure all files are readable and/or executable (chmod 777 *)
+    
+3. Run 03-geocode_looks_all. 
+    - IMPORTANT: Need to define bounding box, i.e., "bbox", for your area of interest, AS WELL AS  "r" and "a", which are your rlooks and alooks
+    - Define the polarization you want to use, "poli" as either "_VV" or "_VH" 
+    - Creates new directory: geo_VV or geo_VH with geocoded and downlooked versions of files in results_dates_VV or results_dates_VH 
+
+
+
+
+
+
+
+
+
+
+
+
